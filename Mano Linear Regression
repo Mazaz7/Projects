@@ -1,0 +1,36 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+df = pd.read_csv('Salary_data.csv')
+x = df.YearsExperience
+y = df.Salary
+
+
+
+x = np.array(x)
+y = np.array(y)
+
+plt.scatter(x, y)
+# nombre de points
+npoints = len(x)
+# calculs des parametres a et b
+a = (npoints * (x*y).sum() - x.sum()*y.sum()) / (npoints*(x**2).sum() - (x.sum())**2)
+b = ((x**2).sum()*y.sum() - x.sum() * (x*y).sum()) / (npoints * (x**2).sum() - (x.sum())**2)
+
+
+print('a:', a, ' | b:', b)
+
+liste_prediction = [0] * len(df['YearsExperience'])
+
+for i in range(0, len(df['YearsExperience'])):
+    year = df['YearsExperience'][i]
+    liste_prediction[i] = a * year + b
+
+df['Prediction'] = liste_prediction
+
+y2 = df.Prediction
+plt.plot(x, y2, 'r')
+plt.scatter(x, y2)
+plt.xlabel('YearsExperience')
+plt.ylabel('Salary')
+plt.show()
