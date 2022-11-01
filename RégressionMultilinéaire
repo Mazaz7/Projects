@@ -1,0 +1,41 @@
+import pandas as pd
+import statsmodels.api as sm
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
+from termcolor import colored as cl
+import seaborn as sb
+import matplotlib.pyplot as plt
+
+df = pd.read_csv('Assurance.csv')
+
+
+y_var = df['Prix']
+
+X1_var = df[['Age','IMC','Fumeur','Sexe']]
+print(df)
+
+
+sm_X1_var = sm.add_constant(X1_var)
+
+mlr_model = sm.OLS(y_var, sm_X1_var)
+mlr_reg = mlr_model.fit()
+
+mlr_reg.summary()
+print(mlr_reg.summary())
+
+X_train, X_test, y_train, y_test = train_test_split(X1_var, y_var, test_size = 0.3, random_state = 0)
+
+lr = LinearRegression()
+lr.fit(X_train, y_train)
+
+yhat = lr.predict(X_test)
+
+print(cl('R-Squared :', attrs = ['bold']), lr.score(X_test, y_test))
+
+
+sb.distplot ( yhat , kde = False, color  =  'r' , label  =  'Valeurs prédites' , bins=20)
+sb.distplot ( y_test ,  kde = False, color  =  'b' , label  =  'Valeurs réelles' , bins=20)
+plt.title ( 'Valeurs réelles vs prédites')
+plt.xlabel ( 'Valeurs')
+plt.ylabel ( 'Fréquence')
+plt.show()
