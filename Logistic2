@@ -1,0 +1,64 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn import linear_model
+from sklearn import metrics
+from sklearn.linear_model import LogisticRegression
+import seaborn as sns
+from matplotlib import pyplot as plt
+df = pd.read_csv("Gallus.csv")
+
+x = df[[
+    "Qoeuf", "Age", "Poids", "Poidsoeuf", "Qnourriture", "Exposition",
+    "Couleuroeuf"
+]]
+y = df["Race"]
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.20)
+modele_regLog = linear_model.LogisticRegression(random_state=0,
+                                                solver='liblinear',
+                                                multi_class='auto')
+
+modele_regLog.fit(x_train, y_train)
+
+precision = modele_regLog.score(x_test, y_test)
+print(precision * 100)
+
+# poule n°0
+num = 822
+print('Poule ', num)
+poule0tot = df[[
+    "Qoeuf", "Age", "Poids", "Poidsoeuf", "Qnourriture", "Exposition",
+    "Couleuroeuf", "Race"
+]].iloc[[num]]
+print(poule0tot)
+poule0 = df[[
+    "Qoeuf", "Age", "Poids", "Poidsoeuf", "Qnourriture", "Exposition",
+    "Couleuroeuf"
+]].iloc[[num]]
+prediction = modele_regLog.predict(poule0)
+print('prédiction :', prediction)
+
+prediction_proba0 = modele_regLog.predict_proba(poule0)
+print('prédiction proba du modèle:', prediction_proba0)
+
+
+
+
+logreg = LogisticRegression()
+logreg.fit(x_train, y_train)
+y_pred_logreg = logreg.predict(x_test)
+print(y_pred_logreg)
+print(y_test)
+cm = metrics.confusion_matrix(y_test, y_pred_logreg)
+print (cm)
+
+
+c=[[0,0],[0,0]]
+for i in range (len(y_test)):
+  col=y_pred_logreg[i]
+  lig=y_test.values.tolist()[i]
+  c[lig][col]=c[lig][col]+1  
+print(c)
+sns.color_palette("hls")
+sns.heatmap(cm, cmap="Blues")
+
+plt.show()
