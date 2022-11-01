@@ -1,0 +1,47 @@
+import pandas as pd
+import numpy as np
+
+df = pd.read_csv('Salary_data.csv')
+print(df)
+
+import matplotlib.pyplot as plt
+
+x = df.YearsExperience
+y = df.Salary
+#plt.plot(x,y)
+plt.scatter(x, y)
+plt.title('Nuage de points avec Matplotlib')
+plt.show()
+
+import statsmodels.formula.api as sm
+
+model = sm.ols('Salary ~ YearsExperience', data=df)
+res = model.fit()
+
+b, a = res.params
+print('a:', a, ' | b:', b)
+print(res.summary())
+
+liste_prediction = [0] * len(df['YearsExperience'])
+
+for i in range(0, len(df['YearsExperience'])):
+    year = df['YearsExperience'][i]
+    liste_prediction[i] = a * year + b
+
+df['Prediction'] = liste_prediction
+
+y2 = df.Prediction
+plt.plot(x, y2, 'r')
+plt.scatter(x, y2)
+plt.xlabel('YearsExperience')
+plt.ylabel('Salary')
+plt.show()
+print()
+data = np.array([x, y])
+covMatrix = np.cov(data, bias=True)
+print(covMatrix)
+
+#[[8.05360920e+00 7.61063034e+04]
+#[7.61063034e+04 7.51550960e+08]]
+
+# Calcul manuel -->
